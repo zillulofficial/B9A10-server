@@ -34,6 +34,12 @@ async function run() {
       const result= await cursor.toArray()
       res.send(result);
     })
+    app.get('/myCraft/:email', async(req, res)=>{
+      const email= req.params.email
+      const query = { email: email}
+      const result = await productCollection.find(query).toArray()
+      res.send(result)
+    })
     app.post('/addProduct', async(req, res)=>{
       const newProduct= req.body
       console.log(newProduct)
