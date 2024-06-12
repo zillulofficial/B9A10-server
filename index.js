@@ -28,6 +28,12 @@ async function run() {
     const productCollection= client.db("ProductDb").collection("product")
 
 
+    app.get('/addProduct',async(req,res)=>{
+
+      const cursor= productCollection.find()
+      const result= await cursor.toArray()
+      res.send(result);
+    })
     app.post('/addProduct', async(req, res)=>{
       const newProduct= req.body
       console.log(newProduct)
