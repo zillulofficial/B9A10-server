@@ -23,16 +23,22 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const productCollection= client.db("ProductDb").collection("product")
 
 
-    app.get('/addProduct',async(req,res)=>{
+    app.get('/allProduct',async(req,res)=>{
 
       const cursor= productCollection.find()
       const result= await cursor.toArray()
       res.send(result);
+    })
+    app.get('/allProduct/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await productCollection.findOne(query)
+      res.send(result)
     })
     app.get('/myCraft/:email', async(req, res)=>{
       const email= req.params.email
@@ -46,6 +52,12 @@ async function run() {
       const result= await productCollection.insertOne(newProduct)
       res.send(result)
       
+    })
+    app.delete('/addProduct/:id', async(req,res)=>{
+      const id = req.params.id
+      const query= { _id: new ObjectId(id)}
+      const result= await productCollection.deleteOne(query)
+      res.send(result)
     })
 
 
