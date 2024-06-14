@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app= express()
 const port= process.env.PORT || 5000
@@ -46,14 +46,41 @@ async function run() {
       const result = await productCollection.find(query).toArray()
       res.send(result)
     })
-    app.post('/addProduct', async(req, res)=>{
+    app.get('/categories/:subName', async(req, res)=>{
+      const subName= req.params.subName
+      const query = { subName: subName}
+      const result = await productCollection.find(query).toArray()
+      res.send(result)
+    })
+    app.post('/allProduct', async(req, res)=>{
       const newProduct= req.body
       console.log(newProduct)
       const result= await productCollection.insertOne(newProduct)
       res.send(result)
       
     })
-    app.delete('/addProduct/:id', async(req,res)=>{
+    app.put('/allProduct/:id', async (req, res) => {
+      const id = req.params.id
+      const updateProduct = req.body
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true };
+      const product = {
+        $set: {
+          name: updateProduct.name,
+          subName: updateProduct.subName,
+          price: updateProduct.price,
+          rating: updateProduct.rating,
+          time: updateProduct.time,
+          details: updateProduct.details,
+          customization: updateProduct.customization,
+          stock: updateProduct.stock,
+          photoURL: updateProduct.photoURL
+        }
+      }
+      const result = await productCollection.updateOne(filter, product, options)
+      res.send(result)
+    })
+    app.delete('/allProduct/:id', async(req,res)=>{
       const id = req.params.id
       const query= { _id: new ObjectId(id)}
       const result= await productCollection.deleteOne(query)
